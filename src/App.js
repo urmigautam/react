@@ -1,24 +1,51 @@
-import logo from './logo.svg';
-import './App.css';
+import logo from "./logo.svg";
+import "./App.css";
+import React, { useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Header from "./MyComponents/Header";
+import Footer from "./MyComponents/Footer";
+import Todos from "./MyComponents/Todos";
+import AddTodo from "./MyComponents/AddTodo";
+import About from "./MyComponents/About";
+import Chatboard from "./MyComponents/Chatboard";
 
 function App() {
+  let initTodo;
+  if (localStorage.getItem('todos') === null) {
+    initTodo = [];
+  } else {
+    initTodo = JSON.parse(localStorage.getItem('todos'));
+  }
+  
+  const [todos, setTodos] = useState(initTodo);
+
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
+
+  const onDelete = (todo) => {
+    setTodos(todos.filter((e) => e !== todo));
+  };
+
+  const AddTodos = (title, desc) => {
+    console.log("adding ", title, desc);
+    let sno = todos.length === 0 ? 0 : todos[todos.length - 1].sno + 1;
+    const mytodo = { sno, title, desc };
+    setTodos([...todos, mytodo]);
+    console.log(mytodo);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Header title="My Todos List" searchBar={false} />
+      <Routes>
+        <Route path="/about" element={<About />} />
+        <Route path="/addtodo" element={<AddTodo addTodos={AddTodos} />} />
+        <Route path="/" element={<Todos todos={todos} onDelete={onDelete} />} />
+        <Route path="/chat" element={<Chatboard />} />
+      </Routes>
+      <Footer />
+    </Router>
   );
 }
 

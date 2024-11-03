@@ -1,0 +1,4 @@
+.chat-board{
+display: flex;
+justify-content: space-around;
+}
